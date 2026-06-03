@@ -25,7 +25,8 @@ jobs:
           set -euxo pipefail
           # O OpenCode faz `git checkout opencode` e às vezes o runner não tem todos os objects/tree necessários.
           # Fazendo fetch explícito do branch (com histórico completo) antes disso, evitamos o `fatal: unable to read tree`.
-          git fetch --no-tags origin opencode --depth=0
+          # Sem --depth=0 (git não aceita 0). Ao omitir --depth, o fetch vem completo.
+          git fetch --no-tags origin opencode
           git branch -f opencode origin/opencode
 
       - name: Run OpenCode
