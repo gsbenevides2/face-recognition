@@ -1,18 +1,22 @@
 import { Elysia } from "elysia";
 import { swagger } from "@elysiajs/openapi";
-import { healthcheckRoutes } from "@/src/routes/healthcheck";
+import { app } from "@/src/index";
+import { getProjectInfo } from "@/app/utils/getProjectInfo";
 
-const app = new Elysia()
-  .use(swagger({
-    documentation: {
-      info: { title: "Face Recognition API", version: "1.0.0" },
-    },
-  }))
-  .use(healthcheckRoutes)
-  .get("/", () => ({ message: "Face Recognition API" }));
+const api = new Elysia({ prefix: "/api" })
+  .use(
+    swagger({
+      documentation: {
+        info: getProjectInfo(),
+      },
+    }),
+  )
+  .use(app);
 
-export const GET = app.handle;
-export const POST = app.handle;
-export const PUT = app.handle;
-export const DELETE = app.handle;
-export const PATCH = app.handle;
+export type App = typeof api;
+
+export const GET = api.fetch;
+export const POST = api.fetch;
+export const PUT = api.fetch;
+export const DELETE = api.fetch;
+export const PATCH = api.fetch;
