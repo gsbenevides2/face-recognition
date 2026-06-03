@@ -69,7 +69,7 @@ jobs:
 
       - name: Install OpenCode
         if: steps.version.outputs.changed == 'true'
-        run: npm install -g opencode
+        run: npm install -g opencode-ai@1.15.13
 
       - name: Generate release notes with OpenCode
         id: notes
