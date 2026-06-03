@@ -30,8 +30,8 @@ jobs:
           git branch -f opencode origin/opencode
 
       - name: Run OpenCode
-        uses: anomalyco/opencode/github@latest
+        uses: anomalyco/opencode/github@v1.15.13
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         with:
-          model: openrouter/openrouter/auto
+          model: openrouter/auto
