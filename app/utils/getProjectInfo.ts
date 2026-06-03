@@ -1,4 +1,3 @@
-import { join } from "node:path";
 import {
   author,
   description,
@@ -8,11 +7,19 @@ import {
   version,
 } from "../../package.json";
 
+const getDefaultBranch = () => {
+  const envBranch = process.env.DEFAULT_BRANCH || process.env.GITHUB_REF_NAME;
+  if (envBranch) {
+    return envBranch.replace(/^refs\/heads\//, "");
+  }
+  return "main";
+};
+
 const makeLicenseUrl = () => {
-  const repoURl = new URL(repository.url);
-  const repoPath = repoURl.pathname;
-  const licensePath = join(repoPath, "/blob/main/LICENSE");
-  return new URL(licensePath, repoURl).toString();
+  const repoUrl = new URL(repository.url);
+  const repoPath = repoUrl.pathname.replace(/\/$/, "");
+  const licensePath = `${repoPath}/blob/${getDefaultBranch()}/LICENSE`;
+  return new URL(licensePath, repoUrl).toString();
 };
 
 export const getProjectName = () => {
@@ -25,8 +32,8 @@ export const getProjectName = () => {
 export const getProjectInfo = () => {
   return {
     title: getProjectName(),
-    description: description,
-    version: version,
+    description,
+    version,
     contact: {
       name: author.name,
       email: author.email,
