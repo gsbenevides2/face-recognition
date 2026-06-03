@@ -20,6 +20,14 @@ jobs:
           fetch-tags: true
           persist-credentials: false
 
+      - name: Ensure opencode branch objects are present
+        run: |
+          set -euxo pipefail
+          # O OpenCode faz `git checkout opencode` e às vezes o runner não tem todos os objects/tree necessários.
+          # Fazendo fetch explícito do branch (com histórico completo) antes disso, evitamos o `fatal: unable to read tree`.
+          git fetch --no-tags origin opencode --depth=0
+          git branch -f opencode origin/opencode
+
       - name: Run OpenCode
         uses: anomalyco/opencode/github@latest
         env:
