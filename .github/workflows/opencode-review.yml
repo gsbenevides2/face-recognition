@@ -9,35 +9,22 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
-      contents: read
-      pull-requests: read
-      issues: read
+      contents: write
+      pull-requests: write
+      issues: write
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
+      - uses: actions/checkout@v6
         with:
-          fetch-depth: 0
-          fetch-tags: true
           persist-credentials: false
-
-      - name: Ensure opencode branch objects are present
-        run: |
-          set -euxo pipefail
-          # Algumas forks/repos podem não ter a branch `opencode`.
-          # Se ela não existir no remoto, pulamos este passo para não quebrar o workflow.
-          if ! git ls-remote --exit-code --heads origin opencode >/dev/null 2>&1; then
-            echo "Remote branch 'opencode' not found; skipping fetch.";
-            exit 0
-          fi
-          # O OpenCode faz `git checkout opencode` e às vezes o runner não tem todos os objects/tree necessários.
-          # Fazendo fetch explícito do branch (com histórico completo) antes disso, evitamos o `fatal: unable to read tree`.
-          # Sem --depth=0 (git não aceita 0). Ao omitir --depth, o fetch vem completo.
-          git fetch --no-tags origin opencode
-          git branch -f opencode origin/opencode
-
-      - name: Run OpenCode
-        uses: anomalyco/opencode/github@v1.15.13
-        env:
-          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-        with:
-          model: openrouter/auto
+       - uses: anomalyco/opencode/github@latest
+         env:
+           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+         with:
+           model: anthropic/claude-sonnet-4-20250514
+           use_github_token: true
+           prompt: |
+             Revise este pull request:
+             - Verifique problemas de qualidade de código
+             - Procure por potenciais bugs
+             - Sugira melhorias
