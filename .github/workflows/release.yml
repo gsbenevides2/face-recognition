@@ -37,8 +37,8 @@ jobs:
           fetch-depth: 0
       - name: Run release script
         env:
-          VERSION: ${{ needs.prepare-release.outputs.version }}
-          PREV_TAG: ${{ needs.prepare-release.outputs.prev_tag }}
+          VERSION: ${{ jobs.prepare-release.outputs.version }}
+          PREV_TAG: ${{ jobs.prepare-release.outputs.prev_tag }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           FULL_REPO: ${{ github.repository }}
@@ -55,7 +55,7 @@ jobs:
           fetch-depth: 0
       - name: Run Build and Push Docker Image
         env:
-          VERSION: ${{ needs.prepare-release.outputs.version }}
+          VERSION: ${{ jobs.prepare-release.outputs.version }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           FULL_REPO: ${{ github.repository }}
         run: |
