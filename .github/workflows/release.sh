@@ -199,8 +199,8 @@ echo "Imagem Docker publicada com tags: ${VERSION_TAG}, ${LATEST_TAG}, ${MINOR_T
 echo "Despachando Coolify"
 
 HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
--X POST "${ COOLIFY_WEBHOOK_URL }" \
--H "Authorization: Bearer ${COOLIFY_TOKEN }")
+-X POST "${COOLIFY_WEBHOOK_URL}" \
+-H "Authorization: Bearer ${COOLIFY_TOKEN}")
 
 if [ "$HTTP_STATUS" -eq 200 ]; then
     echo "Coolify despachado com sucesso."
