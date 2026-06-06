@@ -7,12 +7,7 @@ on:
 jobs:
   review:
     runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: write
-      pull-requests: write
-      issues: write
-      reactions: write
+    permissions: write-all
     steps:
       - uses: actions/checkout@v6
         with:
@@ -23,7 +18,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           model: anthropic/claude-sonnet-4-20250514
-          use_github_token: false
+          use_github_token: true
           prompt: |
             Revise este pull request:
             - Verifique problemas de qualidade de código
