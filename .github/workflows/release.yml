@@ -85,7 +85,7 @@ jobs:
 
           cat /tmp/changes.txt >> /tmp/prompt.txt
 
-          GENERATED=$(opencode -p "$(cat /tmp/prompt.txt)" 2>/dev/null) || GENERATED=""
+          GENERATED=$(opencode run "$(cat /tmp/prompt.txt)" 2>/dev/null) || GENERATED=""
 
           if [ -z "$GENERATED" ]; then
             GENERATED="Release automático - veja os commits para detalhes."
