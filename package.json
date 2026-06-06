@@ -24,7 +24,6 @@
   "dependencies": {
     "@elysia/eden": "^1.4.10",
     "@elysiajs/openapi": "^1.4.15",
-    "@scalar/types": "^0.12.2",
     "elysia": "^1.4.28",
     "next": "16.2.4",
     "pg": "^8.14.0",
