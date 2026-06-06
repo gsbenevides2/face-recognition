@@ -99,9 +99,7 @@ EOF
 
 cat /tmp/changes.txt >> /tmp/prompt.txt
 
-export OPENCODE_MODEL="openrouter/openrouter/auto"
-
-GENERATED=$(opencode run "$(cat /tmp/prompt.txt)" 2>/dev/null || true)
+GENERATED=$(opencode run --model openrouter/openrouter/auto "$(cat /tmp/prompt.txt)" 2>/dev/null || true)
 
 echo "Release notes geradas (ou fallback):"
 echo "$GENERATED"
