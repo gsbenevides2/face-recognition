@@ -9,23 +9,17 @@ jobs:
     runs-on: ubuntu-latest
     permissions: write-all
     steps:
-      - name: Enable detailed logs
-        env:
-          ACTIONS_STEP_DEBUG: "true"
-        run: echo "Debug enabled"
-      - uses: actions/checkout@v6
+      - name: Checkout code
+        uses: actions/checkout@v6
         with:
           persist-credentials: false
-      - uses: anomalyco/opencode/github@0.2.0
+      - name: PR Agent Action Step
+        uses: the-pr-agent/pr-agent@main
+        id: pr_agent
         env:
-          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          config.model: "openrouter/anthropic/claude-3.7-sonnet"
+          OPENROUTER.KEY: ${{ secrets.OPENROUTER_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          USE_GITHUB_TOKEN: "false"
-        with:
-          model: openrouter/anthropic/claude-3.5-sonnet
-          use_github_token: false
-          prompt: |
-            Revise este pull request:
-            - Verifique problemas de qualidade de código
-            - Procure por potenciais bugs
-            - Sugira melhorias
+          github_action_config.auto_review: "true"
+          github_action_config.auto_describe: "true"
+          github_action_config.auto_improve: "true"
