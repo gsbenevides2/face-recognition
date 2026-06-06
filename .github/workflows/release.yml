@@ -37,8 +37,8 @@ jobs:
           fetch-depth: 0
       - name: Run release script
         env:
-          VERSION: ${{ jobs.prepare-release.outputs.version }}
-          PREV_TAG: ${{ jobs.prepare-release.outputs.prev_tag }}
+          VERSION: ${{ needs.prepare-release.outputs.version }}
+          PREV_TAG: ${{ needs.prepare-release.outputs.prev_tag }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           FULL_REPO: ${{ github.repository }}
@@ -46,7 +46,7 @@ jobs:
           chmod +x .github/workflows/release/release.sh
           .github/workflows/release/release.sh
   docker:
-    needs: release
+    needs: prepare-release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -55,7 +55,7 @@ jobs:
           fetch-depth: 0
       - name: Run Build and Push Docker Image
         env:
-          VERSION: ${{ jobs.prepare-release.outputs.version }}
+          VERSION: ${{ needs.prepare-release.outputs.version }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           FULL_REPO: ${{ github.repository }}
         run: |
