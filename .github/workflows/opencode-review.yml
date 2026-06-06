@@ -16,14 +16,14 @@ jobs:
       - uses: actions/checkout@v6
         with:
           persist-credentials: false
-      - uses: anomalyco/opencode/github@latest
+      - uses: anomalyco/opencode/github@0.2.0
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          USE_GITHUB_TOKEN: "true"
+          USE_GITHUB_TOKEN: "false"
         with:
           model: openrouter/anthropic/claude-3.5-sonnet
-          use_github_token: true
+          use_github_token: false
           prompt: |
             Revise este pull request:
             - Verifique problemas de qualidade de código
