@@ -16,8 +16,10 @@ jobs:
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          USE_GITHUB_TOKEN: true
+          
         with:
-          model: anthropic/claude-sonnet-4-20250514
+          model: openrouter/anthropic/claude-3.5-sonnet
           use_github_token: true
           prompt: |
             Revise este pull request:
