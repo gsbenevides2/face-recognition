@@ -22,7 +22,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           model: anthropic/claude-sonnet-4-20250514
-          use_github_token: true
+          use_github_token: false
           prompt: |
             Revise este pull request:
             - Verifique problemas de qualidade de código
