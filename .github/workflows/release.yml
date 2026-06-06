@@ -65,6 +65,10 @@ jobs:
     needs: docker
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Run Coolify Deployment Script
         env:
           COOLIFY_WEBHOOK_URL: ${{ vars.COOLIFY_WEBHOOK_URL }}
