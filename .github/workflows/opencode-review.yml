@@ -12,6 +12,7 @@ jobs:
       contents: write
       pull-requests: write
       issues: write
+      reactions: write
     steps:
       - uses: actions/checkout@v6
         with:
