@@ -161,6 +161,10 @@ EOF
 
 echo "Release ${TAG} criada com sucesso. No GitHub."
 
+# =========================
+# Publica imagem Docker no GitHub Container Registry
+# =========================
+
 REPO_NAME="${FULL_REPO##*/}"
 REPO_OWNER="${FULL_REPO%%/*}"
 REGISTRY="ghcr.io"
@@ -187,6 +191,10 @@ docker push "${LATEST_TAG}"
 docker push "${MINOR_TAG}"
 docker push "${MAJOR_TAG}"
 echo "Imagem Docker publicada com tags: ${VERSION_TAG}, ${LATEST_TAG}, ${MINOR_TAG}, ${MAJOR_TAG}"
+
+# =========================
+# Despacha Coolify
+# =========================
 
 echo "Despachando Coolify"
 
