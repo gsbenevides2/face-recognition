@@ -3,43 +3,9 @@
 set -euo pipefail
 
 # =========================
-# Verifica mudança de versão
-# =========================
-echo "Verificando mudança de versão..."
-
-NEW_VERSION=$(jq -r '.version // empty' package.json)
-
-if [ -z "$NEW_VERSION" ]; then
-    echo "Nenhuma versão encontrada em package.json"
-    exit 0
-fi
-
-OLD_VERSION=$(
-    git show HEAD~1:package.json 2>/dev/null \
-    | jq -r '.version // empty' 2>/dev/null \
-    || echo ""
-)
-
-if [ "$NEW_VERSION" = "$OLD_VERSION" ]; then
-    echo "A Versão não mudou ($NEW_VERSION)"
-    exit 0
-fi
-
-echo "Nova versão detectada: $NEW_VERSION"
-
-# =========================
-# Obtém tag anterior
-# =========================
-
-PREV_TAG=$(git tag --sort=-version:refname | head -1)
-
-echo "Tag anterior: ${PREV_TAG:-<nenhuma>}"
-
-# =========================
 # Monta contexto para IA
 # =========================
 echo "Montando contexto para geração de release notes..."
-VERSION="$NEW_VERSION"
 
 {
     echo "Versão: v${VERSION}"
@@ -129,15 +95,8 @@ fi
 # =========================
 echo "Obtendo informações do repositório..."
 
-REMOTE_URL=$(git remote get-url origin)
-
-if [[ "$REMOTE_URL" =~ github.com[:/]([^/]+)/([^/.]+) ]]; then
-    OWNER="${BASH_REMATCH[1]}"
-    REPO="${BASH_REMATCH[2]}"
-else
-    echo "Não foi possível identificar owner/repo"
-    exit 1
-fi
+REPO_NAME="${FULL_REPO##*/}"
+REPO_OWNER="${FULL_REPO%%/*}"
 
 # =========================
 # Cria Release no GitHub
@@ -149,7 +108,7 @@ curl \
     -X POST \
     -H "Accept: application/vnd.github+json" \
     -H "Authorization: Bearer ${GITHUB_TOKEN}" \
-    "https://api.github.com/repos/${OWNER}/${REPO}/releases" \
+    "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/releases" \
     -d @- <<EOF
 {
   "tag_name": "${TAG}",
@@ -160,50 +119,3 @@ curl \
 EOF
 
 echo "Release ${TAG} criada com sucesso. No GitHub."
-
-# =========================
-# Publica imagem Docker no GitHub Container Registry
-# =========================
-
-REPO_NAME="${FULL_REPO##*/}"
-REPO_OWNER="${FULL_REPO%%/*}"
-REGISTRY="ghcr.io"
-IMAGE_NAME="${REPO_NAME}"
-IMAGE_URL="${REGISTRY}/${REPO_OWNER}/${IMAGE_NAME}"
-LATEST_TAG="${IMAGE_URL}:latest"
-MINOR_VERSION=$(echo "$VERSION" | cut -d. -f1-2)
-MINOR_TAG="${IMAGE_URL}:${MINOR_VERSION}"
-MAJOR_VERSION=$(echo "$VERSION" | cut -d. -f1)
-MAJOR_TAG="${IMAGE_URL}:${MAJOR_VERSION}"
-VERSION_TAG="${IMAGE_URL}:${VERSION}"
-
-echo "Logando no Github Container Registry..."
-
-echo "${GITHUB_TOKEN}" | docker login ${REGISTRY} -u "${REPO_OWNER}" --password-stdin
-echo "Publicando imagem Docker com tag ${VERSION}..."
-
-docker build -t "${VERSION_TAG}" .
-docker tag "${VERSION_TAG}" "${LATEST_TAG}"
-docker tag "${VERSION_TAG}" "${MINOR_TAG}"
-docker tag "${VERSION_TAG}" "${MAJOR_TAG}"
-docker push "${VERSION_TAG}"
-docker push "${LATEST_TAG}"
-docker push "${MINOR_TAG}"
-docker push "${MAJOR_TAG}"
-echo "Imagem Docker publicada com tags: ${VERSION_TAG}, ${LATEST_TAG}, ${MINOR_TAG}, ${MAJOR_TAG}"
-
-# =========================
-# Despacha Coolify
-# =========================
-
-echo "Despachando Coolify"
-
-HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
--X POST "${COOLIFY_WEBHOOK_URL}" \
--H "Authorization: Bearer ${COOLIFY_TOKEN}")
-
-if [ "$HTTP_STATUS" -eq 200 ]; then
-    echo "Coolify despachado com sucesso."
-else
-    echo "Falha ao despachar Coolify. Status HTTP: $HTTP_STATUS"
-fi
