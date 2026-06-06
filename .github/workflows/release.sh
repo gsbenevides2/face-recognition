@@ -99,7 +99,9 @@ EOF
 
 cat /tmp/changes.txt >> /tmp/prompt.txt
 
-GENERATED=$(opencode run --model openrouter/openrouter/auto "$(cat /tmp/prompt.txt)" 2>/dev/null || true)
+export OPENCODE_MODEL="openrouter/openrouter/auto"
+
+GENERATED=$(opencode run "$(cat /tmp/prompt.txt)" 2>/dev/null || true)
 
 echo "Release notes geradas (ou fallback):"
 echo "$GENERATED"
@@ -159,4 +161,44 @@ curl \
 }
 EOF
 
-echo "Release ${TAG} criada com sucesso."
+echo "Release ${TAG} criada com sucesso. No GitHub."
+
+env REPO_NAME="${FULL_REPO##*/}" REPO_OWNER="${FULL_REPO%%/*}"
+
+env REGISTRY="ghcr.io" IMAGE_NAME="${REPO_NAME}"
+env IMAGE_URL="${REGISTRY}/${REPO_OWNER}/${IMAGE_NAME}"
+env LATEST_TAG="${IMAGE_URL}:latest"
+
+env MINOR_VERSION=$(echo "$VERSION" | cut -d. -f1-2)
+env MINOR_TAG="${IMAGE_URL}:${MINOR_VERSION}"
+env MAJOR_VERSION=$(echo "$VERSION" | cut -d. -f1)
+env MAJOR_TAG="${IMAGE_URL}:${MAJOR_VERSION}"
+
+env VERSION_TAG="${IMAGE_URL}:${VERSION}"
+
+echo "Logando no Github Container Registry..."
+
+echo "${GITHUB_TOKEN}" | docker login ${REGISTRY} -u "${REPO_OWNER}" --password-stdin
+echo "Publicando imagem Docker com tag ${VERSION}..."
+
+docker build -t "${VERSION_TAG}" .
+docker tag "${VERSION_TAG}" "${LATEST_TAG}"
+docker tag "${VERSION_TAG}" "${MINOR_TAG}"
+docker tag "${VERSION_TAG}" "${MAJOR_TAG}"
+docker push "${VERSION_TAG}"
+docker push "${LATEST_TAG}"
+docker push "${MINOR_TAG}"
+docker push "${MAJOR_TAG}"
+echo "Imagem Docker publicada com tags: ${VERSION_TAG}, ${LATEST_TAG}, ${MINOR_TAG}, ${MAJOR_TAG}"
+
+echo "Despachando Coolify"
+
+HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+-X POST "${ COOLIFY_WEBHOOK_URL }" \
+-H "Authorization: Bearer ${COOLIFY_TOKEN }")
+
+if [ "$HTTP_STATUS" -eq 200 ]; then
+    echo "Coolify despachado com sucesso."
+else
+    echo "Falha ao despachar Coolify. Status HTTP: $HTTP_STATUS"
+fi
