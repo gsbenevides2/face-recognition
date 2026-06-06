@@ -17,14 +17,14 @@ jobs:
         with:
           persist-credentials: false
       - uses: anomalyco/opencode/github@latest
-         env:
-           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-         with:
-           model: anthropic/claude-sonnet-4-20250514
-           use_github_token: true
-           prompt: |
-             Revise este pull request:
-             - Verifique problemas de qualidade de código
-             - Procure por potenciais bugs
-             - Sugira melhorias
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          model: anthropic/claude-sonnet-4-20250514
+          use_github_token: true
+          prompt: |
+            Revise este pull request:
+            - Verifique problemas de qualidade de código
+            - Procure por potenciais bugs
+            - Sugira melhorias
