@@ -1,4 +1,4 @@
-name: opencode-review
+name: pr-agent-review
 
 on:
   pull_request:
@@ -7,14 +7,17 @@ on:
 jobs:
   review:
     runs-on: ubuntu-latest
-    permissions: write-all
+    permissions:
+      issues: write
+      pull-requests: write
+      contents: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
         with:
           persist-credentials: false
       - name: PR Agent Action Step
-        uses: the-pr-agent/pr-agent@main
+        uses: the-pr-agent/pr-agent@v0.36.0
         id: pr_agent
         env:
           config.model: "openrouter/anthropic/claude-3.7-sonnet"
