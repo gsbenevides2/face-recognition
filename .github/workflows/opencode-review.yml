@@ -23,6 +23,12 @@ jobs:
       - name: Ensure opencode branch objects are present
         run: |
           set -euxo pipefail
+          # Algumas forks/repos podem não ter a branch `opencode`.
+          # Se ela não existir no remoto, pulamos este passo para não quebrar o workflow.
+          if ! git ls-remote --exit-code --heads origin opencode >/dev/null 2>&1; then
+            echo "Remote branch 'opencode' not found; skipping fetch.";
+            exit 0
+          fi
           # O OpenCode faz `git checkout opencode` e às vezes o runner não tem todos os objects/tree necessários.
           # Fazendo fetch explícito do branch (com histórico completo) antes disso, evitamos o `fatal: unable to read tree`.
           # Sem --depth=0 (git não aceita 0). Ao omitir --depth, o fetch vem completo.
