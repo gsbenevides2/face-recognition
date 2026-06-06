@@ -2,7 +2,7 @@
   "name": "face-recognition",
   "description": "Sistema de Reconhecimento de Rostos usando IA",
   "type": "module",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "private": true,
   "license": "MIT",
   "author": {
@@ -24,7 +24,6 @@
   "dependencies": {
     "@elysia/eden": "^1.4.10",
     "@elysiajs/openapi": "^1.4.15",
-    "@scalar/types": "^0.12.2",
     "elysia": "^1.4.28",
     "next": "16.2.4",
     "pg": "^8.14.0",

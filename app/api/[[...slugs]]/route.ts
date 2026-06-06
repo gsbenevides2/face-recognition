@@ -1,11 +1,11 @@
 import { Elysia } from "elysia";
-import { swagger } from "@elysiajs/openapi";
+import { openapi } from "@elysiajs/openapi";
 import { app } from "@/src/index";
 import { getProjectInfo } from "@/app/utils/getProjectInfo";
 
 const api = new Elysia({ prefix: "/api" })
   .use(
-    swagger({
+    openapi({
       documentation: {
         info: getProjectInfo(),
       },
