@@ -99,9 +99,7 @@ EOF
 
 cat /tmp/changes.txt >> /tmp/prompt.txt
 
-export OPENCODE_MODEL="openrouter/openrouter/auto"
-
-GENERATED=$(opencode run "$(cat /tmp/prompt.txt)" 2>/dev/null || true)
+GENERATED=$(opencode run --model openrouter/openrouter/auto "$(cat /tmp/prompt.txt)" 2>/dev/null || true)
 
 echo "Release notes geradas (ou fallback):"
 echo "$GENERATED"
@@ -163,18 +161,17 @@ EOF
 
 echo "Release ${TAG} criada com sucesso. No GitHub."
 
-env REPO_NAME="${FULL_REPO##*/}" REPO_OWNER="${FULL_REPO%%/*}"
-
-env REGISTRY="ghcr.io" IMAGE_NAME="${REPO_NAME}"
-env IMAGE_URL="${REGISTRY}/${REPO_OWNER}/${IMAGE_NAME}"
-env LATEST_TAG="${IMAGE_URL}:latest"
-
-env MINOR_VERSION=$(echo "$VERSION" | cut -d. -f1-2)
-env MINOR_TAG="${IMAGE_URL}:${MINOR_VERSION}"
-env MAJOR_VERSION=$(echo "$VERSION" | cut -d. -f1)
-env MAJOR_TAG="${IMAGE_URL}:${MAJOR_VERSION}"
-
-env VERSION_TAG="${IMAGE_URL}:${VERSION}"
+REPO_NAME="${FULL_REPO##*/}"
+REPO_OWNER="${FULL_REPO%%/*}"
+REGISTRY="ghcr.io"
+IMAGE_NAME="${REPO_NAME}"
+IMAGE_URL="${REGISTRY}/${REPO_OWNER}/${IMAGE_NAME}"
+LATEST_TAG="${IMAGE_URL}:latest"
+MINOR_VERSION=$(echo "$VERSION" | cut -d. -f1-2)
+MINOR_TAG="${IMAGE_URL}:${MINOR_VERSION}"
+MAJOR_VERSION=$(echo "$VERSION" | cut -d. -f1)
+MAJOR_TAG="${IMAGE_URL}:${MAJOR_VERSION}"
+VERSION_TAG="${IMAGE_URL}:${VERSION}"
 
 echo "Logando no Github Container Registry..."
 

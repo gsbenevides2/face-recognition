@@ -2,7 +2,7 @@
   "name": "face-recognition",
   "description": "Sistema de Reconhecimento de Rostos usando IA",
   "type": "module",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "private": true,
   "license": "MIT",
   "author": {
